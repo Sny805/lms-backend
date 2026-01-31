@@ -71,12 +71,19 @@ export const login = asyncHandler(async (req, res) => {
 
     const loggedInuser = await User.findById(user._id).select("-password -refreshToken");
 
+    // const options = {
+    //     httpOnly: true,
+    //     secure: process.env.NODE_ENV === "production", // false for local
+    //     sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+    //     expires: new Date(Date.now() + 8 * 60 * 60 * 1000) // 8 hours
+    // }
+
     const options = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // false for local
-        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-        expires: new Date(Date.now() + 8 * 60 * 60 * 1000) // 8 hours
-    }
+        secure: true,            // ALWAYS true for cross-site
+        sameSite: "None",        // REQUIRED
+        expires: new Date(Date.now() + 8 * 60 * 60 * 1000),
+    };
 
     res.status(200)
         .cookie("accessToken", accessToken, options)
